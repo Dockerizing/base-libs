@@ -4,6 +4,8 @@ from future.standard_library import install_aliases
 install_aliases()
 from builtins import *
 
+import os
+
+DEV_MODE = bool(os.environ.get('DLD_DEV', ''))
 DLD_NAME_SUFFIX = '_DLD_NAME'
-#DLD_STATE_DIR = '/dld-component-states'
-DLD_STATE_DIR = 'tests/dld-component-states'
+DLD_STATE_DIR = '/dld-component-states'
