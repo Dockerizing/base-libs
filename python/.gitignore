@@ -1,0 +1,10 @@
+# Intellij
+.idea/
+*.iml
+
+# Python and pyenv
+*.pyc
+.python-version
+
+# temporary files
+logs/
