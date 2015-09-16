@@ -17,7 +17,6 @@ import time
 import threading
 from concurrent.futures import ThreadPoolExecutor, Future
 
-import IPython
 
 from . import DLD_NAME_SUFFIX, DLD_STATE_DIR
 
@@ -53,9 +52,8 @@ class LockFile(object):
         try:
             os.remove(self.path)
         except OSError as ose:
-            if not (self.ignore_removed and ose.errno == 2):
+            if ose.errno != 2 or (not self.ignore_removed):
                 raise ose
-
 
 class ComponentStateReaderWriter(object):
     def __init__(self, component_name):
@@ -101,8 +99,8 @@ class ComponentStateReaderWriter(object):
                     else:
                         return self._read_current_state()
 
-        for retry in range(0,40):
-            if retry > 0:
+        for retry in range(0,41):
+            if retry > 0 and (retry % 4) == 1:
                 COMPONENT_LOG.debug("retry {n} for reading state for {c}".format(n=retry, c=self.component_name))
                 time.sleep(0.01)
             state_result = attempt()
@@ -135,8 +133,8 @@ class ComponentStateReaderWriter(object):
                                       .format(t=datetime.datetime.now(), prev=current_state, new=new_state)])
 
 
-        for retry in range(0,40):
-            if retry > 0:
+        for retry in range(0,41):
+            if retry > 0 and (retry % 4) == 1:
                 COMPONENT_LOG.debug("retry {n} for writing state for {c}".format(n=retry, c=self.component_name))
                 time.sleep(0.01)
             if attempt() is not _RETRY_NEEDED:
@@ -154,5 +152,4 @@ class ComponentState(namedtuple('ComponentState', 'component_name state_str acce
 
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls, *args + (datetime.datetime.now(), ), **kwargs)
-
 

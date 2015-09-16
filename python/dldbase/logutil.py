@@ -45,7 +45,7 @@ LOG_SETTINGS = {
             'format': '%(asctime)s %(module)s [%(levelname)s]: $(message)s'
         },
         'detailed': {
-            'format': '%(asctime)s %(module)-17s line:%(lineno)-4d ' \
+            'format': '%(asctime)s %(module)-17s line:%(lineno)-4d '
                       '%(levelname)-8s %(message)s',
         },
     },
@@ -56,6 +56,7 @@ LOG_SETTINGS = {
         }
     }
 }
+
 
 def logging_init(log_dir):
     def update_filename(handler_dict):
