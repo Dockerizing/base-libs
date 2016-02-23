@@ -1,9 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from future.standard_library import install_aliases
-install_aliases()
-from builtins import *
-
 import sys
 import os
 import shutil
@@ -151,5 +145,5 @@ class ComponentState(namedtuple('ComponentState', 'component_name state_str acce
     __slots__ = ()
 
     def __new__(cls, *args, **kwargs):
-        return super().__new__(cls, *args + (datetime.datetime.now(), ), **kwargs)
+        return namedtuple.__new__(cls, *args + (datetime.datetime.now(), ), **kwargs)
 

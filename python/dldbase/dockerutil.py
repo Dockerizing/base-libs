@@ -1,10 +1,3 @@
-# Python2/3 compatibility layer - write Python 3-like code executable by a Python 2.7. runtime
-from __future__ import absolute_import, division, print_function, unicode_literals
-from future.standard_library import install_aliases
-
-install_aliases()
-from builtins import *
-
 import logging
 import docker
 from requests.exceptions import ConnectionError
@@ -21,11 +14,12 @@ class DockerClientContext(object):
         self.client = docker.Client(*self.client_args, **self.client_kwargs)
         try:
             self.client.version()
-        except ConnectionError as ce:
+        except Exception as e:
             raise RuntimeError("Encountered problem when interacting with your Docker Engine:\n"
-                               "{e.__class__.__name__}: {e.message}\n"
+                               "{err_repr}\n"
                                " * Is the Docker Daemon up and running?\n"
-                               " * Does the daemon use TLS? (currently unsupported by this tool)".format(e=ce))
+                               " * Does the daemon use TLS? (currently unsupported by this tool)".format(
+                    err_repr=repr(e)))
         return self.client
 
     def __exit__(self, exc_type, exc_val, exc_tb):
