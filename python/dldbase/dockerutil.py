@@ -1,5 +1,6 @@
 import logging
 import docker
+from docker.errors import DockerException
 from requests.exceptions import ConnectionError
 
 DOCKER_CLIENT_LOG = logging.getLogger('dld.dockerclient')
@@ -15,11 +16,17 @@ class DockerClientContext(object):
         try:
             self.client.version()
         except Exception as e:
-            raise RuntimeError("Encountered problem when interacting with your Docker Engine:\n"
-                               "{err_repr}\n"
-                               " * Is the Docker Daemon up and running?\n"
-                               " * Does the daemon use TLS? (currently unsupported by this tool)".format(
-                    err_repr=repr(e)))
+            explanation = getattr(e, 'explanation', b'').decode("utf-8")
+
+            if "client API version" in explanation:
+                raise DockerException("Unsupported Docker Engine version:\n" + explanation)
+
+            else:
+                raise DockerException("Encountered problem when interacting with your Docker Engine:\n"
+                                      "{err_repr}\n"
+                                      " * Is the Docker Daemon up and running?\n"
+                                      " * Does the daemon use TLS? (currently unsupported by this tool)".format(
+                                        err_repr=explanation or repr(e)))
         return self.client
 
     def __exit__(self, exc_type, exc_val, exc_tb):
